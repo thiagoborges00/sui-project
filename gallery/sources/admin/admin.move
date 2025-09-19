@@ -4,6 +4,7 @@ use sui::sui::SUI;
 use sui::balance::{Self, Balance, zero};
 use std::vector::{empty};
 use sui::coin::{Self, Coin};
+use std::string::{Self, String};
 
 public struct AdminCap has key{
     id: UID,
@@ -19,6 +20,7 @@ public struct GalleryData has key{
     fee: u64,
     addresses: vector<address>,
     balance: Balance<SUI>,
+    blobs: vector<String>,
 }
 
 /*
@@ -35,6 +37,7 @@ fun init(ctx: &mut TxContext){
         fee: 100000000,
         addresses: empty(),
         balance: zero<SUI>(),
+        blobs: empty(),
     };
 
     transfer::share_object(gallery);
@@ -50,8 +53,9 @@ fun add_address(gallery: &mut GalleryData, address: address){
 /*
 retirada de dinheiro da galeria(admin)
 */
-public fun withdraw_balance(gallery: &mut GalleryData, _cap: &AdminCap, amount: u64, ctx: &mut TxContext): Coin<SUI>{
-    coin::take<SUI>(&mut gallery.balance, amount, ctx)
+public fun withdraw_balance(gallery: &mut GalleryData, _cap: &AdminCap, amount: u64, ctx: &mut TxContext){
+    let profit = coin::take<SUI>(&mut gallery.balance, amount, ctx);
+    transfer::public_transfer(profit,tx_context::sender(ctx));
 }
 
 /*
@@ -68,4 +72,8 @@ getter da fee
 */
 public (package) fun get_fee(gallery: &mut GalleryData):u64{
     gallery.fee
+}
+
+public fun add_blob(gallery: &mut GalleryData,blobs: String, _cap: &AdminCap){
+    gallery.blobs.push_back(blobs)
 }
