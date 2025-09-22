@@ -16,7 +16,7 @@ export function SuiProvider({children}: React.PropsWithChildren) {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
-				<WalletProvider>
+				<WalletProvider autoConnect={true}>
 					{children}
 				</WalletProvider>
 			</SuiClientProvider>
